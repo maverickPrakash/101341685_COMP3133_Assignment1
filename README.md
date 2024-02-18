@@ -11,3 +11,9 @@ Validate input data whenever required
 Return error details or success response details whenever required
 All data must be sent back and forth in JSON Object format
 Optionally apply JWT security concept to secure all API calls
+
+Sample User : -
+
+username:"Prakash"
+email:"pk@gmail.com"
+password:"pk143"
