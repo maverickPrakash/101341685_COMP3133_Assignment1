@@ -32,6 +32,25 @@ const server = new ApolloServer({
       },
       searchById: async (_,args)=>{
         return await Employees.findById(args.id)
+      },
+
+      loginUser: async(_,args)=>{
+        const users = await User.find().where({
+            $and: [
+                {
+                    $or: [
+                        { username: args.username },
+                        { email: args.username }
+                    ]
+                },
+                { password: args.password }
+            ]
+        }).exec();
+        if (users.length === 0) {
+            return "Check the username and password";
+        } else {
+            return "Sucessful"; 
+        }
       }
     },
     Mutation:{
@@ -64,7 +83,42 @@ const server = new ApolloServer({
                  return err.message
              }
 
+        },
+        deleteEmployeeById: async (_, args) => {
+            try {
+                console.log(args._id);
+                const employee = await Employees.findByIdAndDelete(args._id);
+                console.log(employee)
+                if (!employee) {
+                    throw new Error("Employee not found");
+                }
+                return "Employee deleted successfully";
+            } catch (error) {
+                console.error("Error deleting employee:", error);
+                throw error;
+            }
+        },updateEmployeeById: async (_, args) => {
+          
+                const emp = {
+                    first_name: args.first_name,
+                    last_name: args.last_name,
+                    email: args.email,
+                    gender: args.gender,
+                    salary: args.salary,
+                };
+        
+                const employ= await Employees.findByIdAndUpdate(args._id, emp, { new: true });
+               
+                console.log(employ)
+                if (!employ) {
+                    return "Employee not found"
+                }
+                return "Employ updated";
+          
         }
+        
+        
+        
     }
   },
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
